@@ -2,6 +2,8 @@ import UIKit
 
 final class HomeViewController: UIViewController {
 
+    private let stackView = UIStackView()
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Budget Planner"
@@ -19,11 +21,11 @@ final class HomeViewController: UIViewController {
         return imageView
     }()
 
-    private let addExpenseButton: UIButton = makeButton(title: "Add Expense")
+    private let addExpenseButton: UIButton = GenericButton.make(title: "Add Expense")
 
-    private let viewExpensesButton: UIButton = makeButton(title: "View Expenses")
+    private let viewExpensesButton: UIButton = GenericButton.make(title: "View Expenses")
 
-    private let settingsButton: UIButton =  makeButton(title: "Settings")
+    private let settingsButton: UIButton =  GenericButton.make(title: "Settings")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,17 +35,15 @@ final class HomeViewController: UIViewController {
     }
 
     private func setupLayout() {
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            logoImageView,
-            addExpenseButton,
-            viewExpensesButton,
-            settingsButton
-        ])
-
         stackView.axis = .vertical
         stackView.spacing = 24
         stackView.alignment = .fill
+
+        stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(logoImageView)
+        [addExpenseButton, viewExpensesButton, settingsButton].forEach { button in
+            stackView.addArrangedSubview(button)
+        }
 
         view.addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -59,17 +59,6 @@ final class HomeViewController: UIViewController {
         addExpenseButton.addTarget(self, action: #selector(onAddExpenseClicked), for: .touchUpInside)
         viewExpensesButton.addTarget(self, action: #selector(onViewExpensesClicked), for: .touchUpInside)
         settingsButton.addTarget(self, action: #selector(onSettingsClicked), for: .touchUpInside)
-    }
-
-    private static func makeButton(title: String) -> UIButton {
-        let button = UIButton(type: .system)
-        button.setTitle(title, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        button.layer.cornerRadius = 10
-        button.backgroundColor = .systemBlue
-        button.setTitleColor(.white, for: .normal)
-        return button
     }
 
     @objc private func onAddExpenseClicked() {
