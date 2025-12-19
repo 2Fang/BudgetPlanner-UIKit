@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  budget-planner-uikit
-//
-//  Created by Shayan Sadjady on 19/12/2025.
-//
-
 import UIKit
 
 class ViewController: UIViewController {

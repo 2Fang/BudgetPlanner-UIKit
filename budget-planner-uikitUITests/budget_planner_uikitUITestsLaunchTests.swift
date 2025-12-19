@@ -1,10 +1,3 @@
-//
-//  budget_planner_uikitUITestsLaunchTests.swift
-//  budget-planner-uikitUITests
-//
-//  Created by Shayan Sadjady on 19/12/2025.
-//
-
 import XCTest
 
 final class budget_planner_uikitUITestsLaunchTests: XCTestCase {

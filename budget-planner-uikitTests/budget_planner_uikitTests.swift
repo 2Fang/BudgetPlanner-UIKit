@@ -1,10 +1,3 @@
-//
-//  budget_planner_uikitTests.swift
-//  budget-planner-uikitTests
-//
-//  Created by Shayan Sadjady on 19/12/2025.
-//
-
 import Testing
 @testable import budget_planner_uikit
 
