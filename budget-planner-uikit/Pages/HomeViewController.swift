@@ -4,14 +4,7 @@ final class HomeViewController: UIViewController {
 
     private let stackView = UIStackView()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Budget Planner"
-        label.font = .systemFont(ofSize: 36, weight: .bold)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
+    private let titleLabel: UILabel = GenericText.make(text: "Budget Planner", size: 36)
 
     private let logoImageView: UIImageView = {
         let imageView = UIImageView()
