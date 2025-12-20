@@ -40,17 +40,8 @@ final class AddExpenseViewController: UIViewController {
         stackView.alignment = .fill
         stackView.spacing = 24
 
-        expenseRowStack.axis = .horizontal
-        expenseRowStack.alignment = .center
-        expenseRowStack.spacing = 16
-        expenseRowStack.addArrangedSubview(expenseLabel)
-        expenseRowStack.addArrangedSubview(expenseTextField)
-
-        amountRowStack.axis = .horizontal
-        amountRowStack.alignment = .center
-        amountRowStack.spacing = 16
-        amountRowStack.addArrangedSubview(amountLabel)
-        amountRowStack.addArrangedSubview(amountTextField)
+        setupExpenseSubView()
+        setupAmountSubView()
 
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(dateLabel)
@@ -66,7 +57,22 @@ final class AddExpenseViewController: UIViewController {
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
             stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+    }
 
+    private func setupExpenseSubView() {
+        expenseRowStack.axis = .horizontal
+        expenseRowStack.alignment = .center
+        expenseRowStack.spacing = 16
+        expenseRowStack.addArrangedSubview(expenseLabel)
+        expenseRowStack.addArrangedSubview(expenseTextField)
+    }
+
+    private func setupAmountSubView() {
+        amountRowStack.axis = .horizontal
+        amountRowStack.alignment = .center
+        amountRowStack.spacing = 16
+        amountRowStack.addArrangedSubview(amountLabel)
+        amountRowStack.addArrangedSubview(amountTextField)
     }
 
 }
