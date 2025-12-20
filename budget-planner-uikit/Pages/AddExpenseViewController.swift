@@ -1,7 +1,8 @@
 import UIKit
 
-final class AddExpenseViewController: UIViewController, UITextFieldDelegate {
+final class AddExpenseViewController: UIViewController {
     private let expenseStore: ExpenseStore
+    private let amountInputDelegate = DecimalInputDelegate()
 
     private let stackView: UIStackView = UIStackView()
     private let expenseRowStack = UIStackView()
@@ -44,7 +45,7 @@ final class AddExpenseViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        amountTextField.delegate = self
+        amountTextField.delegate = amountInputDelegate
         setupLayout()
     }
 
@@ -98,13 +99,11 @@ final class AddExpenseViewController: UIViewController, UITextFieldDelegate {
     @objc private func saveButtonTapped() {
         let name = (expenseTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         if name == "" {
-            print("invalid name")
             presentAlert(.missingExpenseName)
             return
         }
         let amountString = (amountTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         guard let amount = Decimal(string: amountString) else {
-            print("invalid amount")
             presentAlert(.invalidAmount)
             return
         }
@@ -112,42 +111,11 @@ final class AddExpenseViewController: UIViewController, UITextFieldDelegate {
           try expenseStore.add(name: name, amount: amount)
         } catch {
             presentAlert(.saveFailed(message: error.localizedDescription))
-            print("failed to save")
         }
         presentAlert(.successFulSave)
     }
 
     private func presentAlert(_ alert: ExpenseAlert) {
-        let vc = UIAlertController(title: alert.title, message: alert.message, preferredStyle: .alert)
-        vc.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            self.dismiss(animated: true)
-        })
-        present(vc, animated: true)
-    }
-
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        guard textField === amountTextField else { return true }
-        if string.isEmpty {
-            return true
-        }
-
-        let decimalSeparator = Locale.current.decimalSeparator ?? "."
-        let allowed = CharacterSet(charactersIn: "1234567890" + decimalSeparator)
-
-        if string.rangeOfCharacter(from: allowed.inverted) != nil {
-            return false
-        }
-
-        if string == decimalSeparator,
-           let current = textField.text,
-           current.contains(decimalSeparator) {
-            return false
-        }
-
-        return true
+        presentOKAlert(title: alert.title, message: alert.message)
     }
 }
