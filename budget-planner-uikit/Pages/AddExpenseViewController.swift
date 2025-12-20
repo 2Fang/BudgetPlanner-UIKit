@@ -1,6 +1,6 @@
 import UIKit
 
-final class AddExpenseViewController: UIViewController {
+final class AddExpenseViewController: UIViewController, UITextFieldDelegate {
     private let expenseStore: ExpenseStore
 
     private let stackView: UIStackView = UIStackView()
@@ -44,6 +44,7 @@ final class AddExpenseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        amountTextField.delegate = self
         setupLayout()
     }
 
@@ -116,11 +117,37 @@ final class AddExpenseViewController: UIViewController {
         presentAlert(.successFulSave)
     }
 
-    func presentAlert(_ alert: ExpenseAlert) {
+    private func presentAlert(_ alert: ExpenseAlert) {
         let vc = UIAlertController(title: alert.title, message: alert.message, preferredStyle: .alert)
         vc.addAction(UIAlertAction(title: "OK", style: .default) { _ in
             self.dismiss(animated: true)
         })
         present(vc, animated: true)
+    }
+
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        guard textField === amountTextField else { return true }
+        if string.isEmpty {
+            return true
+        }
+
+        let decimalSeparator = Locale.current.decimalSeparator ?? "."
+        let allowed = CharacterSet(charactersIn: "1234567890" + decimalSeparator)
+
+        if string.rangeOfCharacter(from: allowed.inverted) != nil {
+            return false
+        }
+
+        if string == decimalSeparator,
+           let current = textField.text,
+           current.contains(decimalSeparator) {
+            return false
+        }
+
+        return true
     }
 }
