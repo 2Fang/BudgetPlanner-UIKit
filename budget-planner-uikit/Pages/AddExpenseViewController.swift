@@ -1,6 +1,7 @@
 import UIKit
 
 final class AddExpenseViewController: UIViewController {
+    private let expenseStore: ExpenseStore
 
     private let stackView: UIStackView = UIStackView()
     private let expenseRowStack = UIStackView()
@@ -29,6 +30,17 @@ final class AddExpenseViewController: UIViewController {
         return textField
     }()
 
+    private let saveButton = GenericButton.make(title: "Save")
+
+    init(expenseStore: ExpenseStore) {
+        self.expenseStore = expenseStore
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -47,6 +59,8 @@ final class AddExpenseViewController: UIViewController {
         stackView.addArrangedSubview(dateLabel)
         stackView.addArrangedSubview(expenseRowStack)
         stackView.addArrangedSubview(amountRowStack)
+
+        stackView.addArrangedSubview(saveButton)
 
         view.addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -73,6 +87,24 @@ final class AddExpenseViewController: UIViewController {
         amountRowStack.spacing = 16
         amountRowStack.addArrangedSubview(amountLabel)
         amountRowStack.addArrangedSubview(amountTextField)
+    }
+
+    private func setupSaveButton() {
+        saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+    }
+
+    @objc private func saveButtonTapped() {
+        let name = (expenseTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let amountString = (amountTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let amount = Decimal(string: amountString) else {
+            print("invalid amount")
+            return
+        }
+        do {
+          try expenseStore.add(name: name, amount: amount)
+        } catch {
+            print("failed to save")
+        }
     }
 
 }

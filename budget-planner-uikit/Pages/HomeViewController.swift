@@ -1,6 +1,8 @@
 import UIKit
+import SwiftData
 
 final class HomeViewController: UIViewController {
+    private let expenseStore: ExpenseStore
 
     private let stackView = UIStackView()
 
@@ -15,10 +17,17 @@ final class HomeViewController: UIViewController {
     }()
 
     private let addExpenseButton: UIButton = GenericButton.make(title: "Add Expense")
-
     private let viewExpensesButton: UIButton = GenericButton.make(title: "View Expenses")
-
     private let settingsButton: UIButton =  GenericButton.make(title: "Settings")
+
+    init(expenseStore: ExpenseStore) {
+        self.expenseStore = expenseStore
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,7 +64,7 @@ final class HomeViewController: UIViewController {
     }
 
     @objc private func onAddExpenseClicked() {
-        let addVC = AddExpenseViewController()
+        let addVC = AddExpenseViewController(expenseStore: expenseStore)
         let nav = UINavigationController(rootViewController: addVC)
         nav.modalPresentationStyle = .pageSheet
         present(nav, animated: true)

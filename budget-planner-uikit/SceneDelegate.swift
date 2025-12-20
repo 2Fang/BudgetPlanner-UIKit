@@ -1,4 +1,5 @@
 import UIKit
+import SwiftData
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -11,7 +12,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let window = UIWindow(windowScene: windowScene)
 
-        let homeVC = HomeViewController()
+        let container: ModelContainer
+        do {
+            container = try ModelContainer(for: Expense.self)
+        } catch {
+            fatalError("Failed to initialise SwiftData container: \(error)")
+        }
+        let expenseStore = ExpenseStore(context: container.mainContext)
+
+        let homeVC = HomeViewController(expenseStore: expenseStore)
         let nav = UINavigationController(rootViewController: homeVC)
 
         window.rootViewController = nav
