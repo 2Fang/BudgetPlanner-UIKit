@@ -55,14 +55,19 @@ final class HomeViewController: UIViewController {
     }
 
     @objc private func onAddExpenseClicked() {
-        print("clicked add expense")
+        let addVC = AddExpenseViewController()
+        let nav = UINavigationController(rootViewController: addVC)
+        nav.modalPresentationStyle = .pageSheet
+        present(nav, animated: true)
     }
 
     @objc private func onViewExpensesClicked() {
-        print("clicked view expenses")
+        let addVC = ExpensesViewController()
+        navigationController?.pushViewController(addVC, animated: true)
     }
 
     @objc private func onSettingsClicked() {
-        print("clicked settings")
+        let addVC = SettingsViewController()
+        navigationController?.pushViewController(addVC, animated: true)
     }
 }
