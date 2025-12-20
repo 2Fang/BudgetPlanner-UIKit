@@ -9,7 +9,8 @@ final class ExpenseStore {
     }
 
     func add(name: String, amount: Decimal, createdAt: Date = Date()) throws {
-        let expense = Expense(name: name, amount: amount, createdAt: createdAt)
+        let intAmount = Int(truncating: NSDecimalNumber(decimal: amount * 100))
+        let expense = Expense(name: name, amount: intAmount, createdAt: createdAt)
         context.insert(expense)
         try context.save()
     }

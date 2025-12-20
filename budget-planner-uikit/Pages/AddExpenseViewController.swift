@@ -60,6 +60,7 @@ final class AddExpenseViewController: UIViewController {
         stackView.addArrangedSubview(expenseRowStack)
         stackView.addArrangedSubview(amountRowStack)
 
+        setupSaveButton()
         stackView.addArrangedSubview(saveButton)
 
         view.addSubview(stackView)
@@ -95,16 +96,31 @@ final class AddExpenseViewController: UIViewController {
 
     @objc private func saveButtonTapped() {
         let name = (expenseTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if name == "" {
+            print("invalid name")
+            presentAlert(.missingExpenseName)
+            return
+        }
         let amountString = (amountTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         guard let amount = Decimal(string: amountString) else {
             print("invalid amount")
+            presentAlert(.invalidAmount)
             return
         }
         do {
           try expenseStore.add(name: name, amount: amount)
         } catch {
+            presentAlert(.saveFailed(message: error.localizedDescription))
             print("failed to save")
         }
+        presentAlert(.successFulSave)
     }
 
+    func presentAlert(_ alert: ExpenseAlert) {
+        let vc = UIAlertController(title: alert.title, message: alert.message, preferredStyle: .alert)
+        vc.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            self.dismiss(animated: true)
+        })
+        present(vc, animated: true)
+    }
 }

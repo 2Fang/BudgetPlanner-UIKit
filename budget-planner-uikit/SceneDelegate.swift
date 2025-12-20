@@ -4,6 +4,8 @@ import SwiftData
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    private var modelContainer: ModelContainer?
+    private var expensestore: ExpenseStore?
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -12,21 +14,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let window = UIWindow(windowScene: windowScene)
 
-        let container: ModelContainer
         do {
-            container = try ModelContainer(for: Expense.self)
+            let container = try ModelContainer(for: Expense.self)
+            self.modelContainer = container
+            let expenseStore = ExpenseStore(context: container.mainContext)
+            self.expensestore = expenseStore
+
+            let homeVC = HomeViewController(expenseStore: expenseStore)
+            let nav = UINavigationController(rootViewController: homeVC)
+
+            window.rootViewController = nav
+            window.makeKeyAndVisible()
+
+            self.window = window
         } catch {
             fatalError("Failed to initialise SwiftData container: \(error)")
         }
-        let expenseStore = ExpenseStore(context: container.mainContext)
-
-        let homeVC = HomeViewController(expenseStore: expenseStore)
-        let nav = UINavigationController(rootViewController: homeVC)
-
-        window.rootViewController = nav
-        window.makeKeyAndVisible()
-
-        self.window = window
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
