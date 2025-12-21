@@ -71,7 +71,7 @@ final class HomeViewController: UIViewController {
     }
 
     @objc private func onViewExpensesClicked() {
-        let addVC = ExpensesViewController()
+        let addVC = ExpensesViewController(expenseStore: expenseStore)
         navigationController?.pushViewController(addVC, animated: true)
     }
 

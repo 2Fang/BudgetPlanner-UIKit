@@ -4,12 +4,16 @@ import SwiftData
 @Model
 final class Expense {
     var name: String
-    var amount: Int
+    var pennies: Int
     var createdAt: Date
 
-    init(name: String, amount: Int, createdAt: Date = Date()) {
+    var amount: Decimal {
+        .init(pennies) / 100
+    }
+
+    init(name: String, pennies: Int, createdAt: Date = Date()) {
         self.name = name
-        self.amount = amount
+        self.pennies = pennies
         self.createdAt = createdAt
     }
 }
