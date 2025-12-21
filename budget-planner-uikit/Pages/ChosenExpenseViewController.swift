@@ -1,6 +1,6 @@
 import UIKit
 
-final class ExpenseViewController: UIViewController {
+final class ChosenExpenseViewController: UIViewController {
     let stackView = UIStackView()
 
     let expense: Expense

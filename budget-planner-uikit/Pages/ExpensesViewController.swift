@@ -1,34 +1,46 @@
 import UIKit
 
-final class ExpensesViewController: UIViewController {
+final class ExpensesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        expenses.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: ExpenseTableCell.reuseIdentifier, for: indexPath) as! ExpenseTableCell
+        cell.configure(expense: expenses[indexPath.row], openExpense: openExpense(_:))
+        return cell
+    }
+    
 
-    let expenseStore: ExpenseStore
+    private let expenseStore: ExpenseStore
 
-    let stackView = UIStackView()
+    private let stackView = UIStackView()
 
-    let titleLabel: UILabel = GenericText.make(text: "Expenses", size: 36, weight: .bold)
+    private let titleLabel: UILabel = GenericText.make(text: "Expenses", size: 36, weight: .bold)
 
-    var selectedDate = Date() {
+    private var selectedDate = Date() {
         didSet {
             updateDate()
         }
     }
-    let dateLabel: UILabel = GenericText.make(text: "", size: 28, weight: .semibold)
+    private let dateLabel: UILabel = GenericText.make(text: "", size: 28, weight: .semibold)
 
-    let yesterdayButton: UIButton = {
+    private let yesterdayButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "arrowshape.turn.up.left.fill"), for: .normal)
         return button
     }()
 
-    let tomorrowButton: UIButton = {
+    private let tomorrowButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "arrowshape.turn.up.right.fill"), for: .normal)
         return button
     }()
 
-    let dateStackView = UIStackView()
-    let expensesView = UIStackView()
+    private let dateStackView = UIStackView()
+    private let expensesView = UITableView()
+    private var expenses: [Expense] = []
+
 
     init(expenseStore: ExpenseStore) {
         self.expenseStore = expenseStore
@@ -43,6 +55,7 @@ final class ExpensesViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         updateDate()
+        setExpenseTable()
         setupLayout()
     }
 
@@ -87,38 +100,28 @@ final class ExpensesViewController: UIViewController {
         tomorrowButton.addTarget(self, action: #selector(tomorrowTapped), for: .touchUpInside)
     }
 
-    private func setExpenses() {
-        expensesView.axis = .vertical
-        expensesView.alignment = .fill
-        expensesView.distribution = .fillEqually
-
-        guard let expenses = try? expenseStore.fetchBy(date: selectedDate) else {
-            return
-        }
-        expensesView.arrangedSubviews.forEach { subview in
-            expensesView.removeArrangedSubview(subview)
-            subview.removeFromSuperview()
-        }
-        for expense in expenses {
-            expensesView.addArrangedSubview(makeExpenseView(expense: expense))
-        }
+    private func setExpenseTable() {
+        expensesView.dataSource = self
+        expensesView.delegate = self
+        expensesView.register(ExpenseTableCell.self, forCellReuseIdentifier: ExpenseTableCell.reuseIdentifier)
     }
 
-    private func makeExpenseView(expense: Expense) -> UIStackView {
-        print(expense.name)
-        let stackView = ExpenseRowView(expense: expense, openExpense: openExpense(_:))
+    private func resetExpenses() {
+        expenses = (try? expenseStore.fetchBy(date: selectedDate)) ?? []
+        expensesView.reloadData()
+    }
 
-        return stackView
-
+    private func makeExpenseView(expense: Expense) -> UITableViewCell {
+        return ExpenseTableCell()
     }
 
     private func updateDate() {
         dateLabel.text = CustomDateFormatter.date(from: selectedDate)
-        setExpenses()
+        resetExpenses()
     }
 
     private func openExpense(_ expense: Expense) {
-        let expenseViewController = ExpenseViewController(expense: expense, expenseStore: expenseStore)
+        let expenseViewController = ChosenExpenseViewController(expense: expense, expenseStore: expenseStore)
         navigationController?.pushViewController(expenseViewController, animated: true)
     }
 
